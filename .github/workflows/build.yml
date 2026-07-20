@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - recovery/last-known-good
+  pull_request:
   workflow_dispatch:
 
 jobs:
