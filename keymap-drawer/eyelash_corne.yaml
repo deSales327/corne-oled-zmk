@@ -1,0 +1,102 @@
+layout: {zmk_keyboard: eyelash_corne}
+layers:
+  QWERTY: [TAB, Q, W, E, R, T, UP, Y, U, I, O, P, BSPC, LCTRL, A, S, D, F, G, LEFT, RET, RIGHT, H, J, K, L, ;, '''', LSHFT, Z, X, C, V, B, SPACE, DOWN, N, M, ',',
+    ., /, ESC, LGUI, NUMBER, SPACE, RET, SYMBOL, RALT]
+  NUMBER:
+  - TAB
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - {t: ▽, type: trans}
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - '0'
+  - BSPC
+  - BT CLR
+  - {t: BT, h: '0'}
+  - {t: BT, h: '1'}
+  - {t: BT, h: '2'}
+  - {t: BT, h: '3'}
+  - {t: BT, h: '4'}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - LEFT
+  - DOWN
+  - UP
+  - RIGHT
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - LGUI
+  - {type: held}
+  - SPACE
+  - RET
+  - {t: ▽, type: trans}
+  - RALT
+  SYMBOL:
+  - TAB
+  - '!'
+  - '@'
+  - '#'
+  - $
+  - '%'
+  - {t: ▽, type: trans}
+  - ^
+  - '&'
+  - '*'
+  - (
+  - )
+  - BSPC
+  - LCTRL
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - '-'
+  - '='
+  - '['
+  - ']'
+  - \
+  - '`'
+  - LSHFT
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - _
+  - +
+  - '{'
+  - '}'
+  - '|'
+  - '~'
+  - LGUI
+  - {t: ▽, type: trans}
+  - SPACE
+  - RET
+  - {type: held}
+  - RALT
