@@ -9,6 +9,9 @@ manifest:
     - name: eyelash
       url-base: https://github.com/a741725193
 
+    - name: aym1607
+      url-base: https://github.com/AYM1607
+
   projects:
     - name: zmk
       remote: zmkfirmware
@@ -22,6 +25,10 @@ manifest:
     - name: zmk-board-eyelash
       remote: eyelash
       revision: main
+
+    - name: zmk-driver-azoteq-iqs5xx
+      remote: aym1607
+      revision: 27321f0232b50f0af31eb27ff97d539933467ea4
 
   self:
     path: config
