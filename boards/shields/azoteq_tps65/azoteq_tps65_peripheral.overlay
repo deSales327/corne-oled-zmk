@@ -1,0 +1,62 @@
+#include "azoteq_tps65.dtsi"
+
+/*
+ * Keep the OLED on the standard Pro Micro I2C bus:
+ *   SDA D2 / P0.17
+ *   SCL D3 / P0.20
+ *
+ * The TPS65 uses the nRF52840's second I2C controller:
+ *   SDA D0 / P0.08
+ *   SCL D1 / P0.06
+ */
+&pinctrl {
+    tps65_i2c_default: tps65_i2c_default {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 8)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 6)>;
+        };
+    };
+
+    tps65_i2c_sleep: tps65_i2c_sleep {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 8)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 6)>;
+            low-power-enable;
+        };
+    };
+};
+
+&i2c1 {
+    compatible = "nordic,nrf-twi";
+    status = "okay";
+    pinctrl-0 = <&tps65_i2c_default>;
+    pinctrl-1 = <&tps65_i2c_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    tps65: iqs5xx@74 {
+        status = "okay";
+        compatible = "azoteq,iqs5xx";
+        reg = <0x74>;
+
+        reset-gpios = <&pro_micro 8 GPIO_ACTIVE_LOW>;
+        rdy-gpios = <&pro_micro 9 GPIO_ACTIVE_HIGH>;
+
+        one-finger-tap;
+        press-and-hold;
+        press-and-hold-time = <250>;
+        two-finger-tap;
+
+        scroll;
+        natural-scroll-y;
+        natural-scroll-x;
+
+        bottom-beta = <5>;
+        stationary-threshold = <5>;
+
+        switch-xy;
+    };
+};
+
+&tps65_split {
+    device = <&tps65>;
+};
