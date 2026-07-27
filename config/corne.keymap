@@ -9,6 +9,15 @@
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/rgb.h>
 
+/*
+ * This build has only the 21 per-key SK6812 LEDs fitted on each half.
+ * ZMK uses the RGB underglow subsystem for addressable per-key LEDs too.
+ * Override the generic Corne default of 10 LEDs per half.
+ */
+&led_strip {
+        chain-length = <21>;
+};
+
 / {
         macros {
                 alt_tab_layer: alt_tab_layer {
