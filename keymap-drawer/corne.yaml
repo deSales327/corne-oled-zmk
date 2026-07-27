@@ -27,7 +27,7 @@ layers:
   - RIGHT
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
-  - '&studio_unlock'
+  - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
   - {t: ▽, type: trans}
@@ -71,11 +71,11 @@ layers:
   - \
   - '`'
   - LSHFT
-  - '&studio_unlock'
-  - RGB TOG
-  - RGB EFF
-  - RGB BRD
-  - RGB BRI
+  - {t: ▽, type: trans}
+  - '&bl BL_TOG'
+  - '&bl BL_ON'
+  - '&bl BL_OFF'
+  - {t: ▽, type: trans}
   - _
   - +
   - '{'
