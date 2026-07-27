@@ -1,5 +1,10 @@
 #include "azoteq_tps65.dtsi"
+#include <input/processors.dtsi>
 
 &tps65_listener {
     status = "okay";
+
+    /* Reduce relative X/Y pointer movement to 80%.
+     * Gestures and scroll events remain unchanged. */
+    input-processors = <&zip_xy_scaler 4 5>;
 };
