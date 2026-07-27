@@ -1,0 +1,1 @@
+Temporary branch-only marker for the isolated TPS65 final firmware CI validation. It does not affect firmware configuration or compilation.
