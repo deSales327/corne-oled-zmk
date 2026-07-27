@@ -56,7 +56,9 @@
         bottom-beta = <5>;
         stationary-threshold = <5>;
 
-        switch-xy;
+        /* Vertical physical mounting: physical up maps to cursor up,
+         * and physical left maps to cursor left. */
+        flip-y;
     };
 };
 
