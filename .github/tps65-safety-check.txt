@@ -1,0 +1,1 @@
+Temporary marker for the isolated TPS65 final firmware CI validation. This file does not affect firmware configuration or compilation.
