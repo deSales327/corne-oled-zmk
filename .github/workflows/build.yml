@@ -9,6 +9,7 @@ on:
   pull_request:
     branches:
       - master
+      - feature/azoteq-tps65-right
   workflow_dispatch:
 
 permissions:
