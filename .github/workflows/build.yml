@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - sofle_hybrid_rgb_rev5
+      - feature/azoteq-tps65-right
   pull_request:
     branches:
       - master
