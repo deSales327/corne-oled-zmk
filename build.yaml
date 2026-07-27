@@ -2,13 +2,11 @@
 include:
   - board: nice_nano_v2
     shield: corne_left nice_oled azoteq_tps65_central
-    cmake-args: -DCONFIG_ZMK_USB_LOGGING=y
-    artifact-name: corne_left_rgb_firmware_isolation_log
+    artifact-name: corne_left_rgb_firmware_isolation
 
   - board: nice_nano_v2
     shield: corne_right nice_oled azoteq_tps65_peripheral
-    cmake-args: -DCONFIG_ZMK_USB_LOGGING=y
-    artifact-name: corne_right_rgb_firmware_isolation_log
+    artifact-name: corne_right_rgb_firmware_isolation
 
   - board: nice_nano_v2
     shield: settings_reset
