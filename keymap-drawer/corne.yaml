@@ -72,10 +72,10 @@ layers:
   - '`'
   - LSHFT
   - '&studio_unlock'
-  - RGB TOG
-  - RGB EFF
-  - RGB BRD
-  - RGB BRI
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
+  - {t: ▽, type: trans}
   - _
   - +
   - '{'
