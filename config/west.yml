@@ -6,9 +6,6 @@ manifest:
     - name: mctechnology17
       url-base: https://github.com/mctechnology17
 
-    - name: eyelash
-      url-base: https://github.com/a741725193
-
     - name: aym1607
       url-base: https://github.com/AYM1607
 
@@ -20,11 +17,7 @@ manifest:
 
     - name: zmk-nice-oled
       remote: mctechnology17
-      revision: main
-
-    - name: zmk-board-eyelash
-      remote: eyelash
-      revision: main
+      revision: 46f824abb2bd41f1287c5c68abd14122af6042a3
 
     - name: zmk-driver-azoteq-iqs5xx
       remote: aym1607
