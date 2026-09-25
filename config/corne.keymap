@@ -7,8 +7,50 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/backlight.h>
+#include <zephyr/dt-bindings/pwm/pwm.h>
+
+/* The .keymap is itself a Devicetree overlay, so keep the diagnostic hardware
+ * here to guarantee it is applied by the standard ZMK user-config workflow. */
+&spi3 {
+        status = "disabled";
+};
+
+&pinctrl {
+        pwm0_default: pwm0_default {
+                group1 {
+                        psels = <NRF_PSEL(PWM_OUT0, 0, 6)>;
+                };
+        };
+
+        pwm0_sleep: pwm0_sleep {
+                group1 {
+                        psels = <NRF_PSEL(PWM_OUT0, 0, 6)>;
+                        low-power-enable;
+                };
+        };
+};
+
+&pwm0 {
+        status = "okay";
+        pinctrl-0 = <&pwm0_default>;
+        pinctrl-1 = <&pwm0_sleep>;
+        pinctrl-names = "default", "sleep";
+};
 
 / {
+        p006_probe_backlight: pwmleds {
+                compatible = "pwm-leds";
+
+                p006_probe_led: pwm_led_0 {
+                        pwms = <&pwm0 0 PWM_MSEC(10) PWM_POLARITY_NORMAL>;
+                };
+        };
+
+        chosen {
+                zmk,backlight = &p006_probe_backlight;
+        };
+
         macros {
                 alt_tab_layer: alt_tab_layer {
                         compatible = "zmk,behavior-macro";
@@ -28,11 +70,6 @@
                 compatible = "zmk,keymap";
 
                 default_layer {
-// -----------------------------------------------------------------------------------------
-// |  TAB |  Q  |  W  |  E  |  R  |  T  |   |  Y  |  U   |  I  |  O  |  P  | BKSP |
-// | CTRL |  A  |  S  |  D  |  F  |  G  |   |  H  |  J   |  K  |  L  |  ;  |  '   |
-// | SHFT |  Z  |  X  |  C  |  V  |  B  |   |  N  |  M   |  ,  |  .  |  /  | ESC  |
-//                    | GUI | ALT+L1 | SPC |   | ENT | RSE  | ALT |
                         bindings = <
    &kp TAB   &kp Q &kp W &kp E &kp R &kp T   &kp Y &kp U  &kp I     &kp O   &kp P    &kp BSPC
    &kp LCTRL &kp A &kp S &kp D &kp F &kp G   &kp H &kp J  &kp K     &kp L   &kp SEMI &kp SQT
@@ -40,30 +77,23 @@
                   &kp LGUI &alt_tab_layer &kp SPACE   &kp RET &mo 2 &kp RALT
                         >;
                 };
+
                 lower_layer {
-// -----------------------------------------------------------------------------------------
-// |  TAB |  1  |  2  |  3  |  4  |  5  |   |  6  |  7  |  8  |  9  |  0  | BKSP |
-// | BTCLR| BT1 | BT2 | BT3 | BT4 | BT5 |   | LFT | DWN |  UP | RGT |     |      |
-// | SHFT |     |     |     |     |     |   |     |     |     |     |     |      |
-//                    | GUI |     | SPC |   | ENT |     | ALT |
                         bindings = <
    &kp TAB    &kp N1       &kp N2       &kp N3       &kp N4       &kp N5         &kp N6   &kp N7   &kp N8 &kp N9    &kp N0 &kp BSPC
    &bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4   &kp LEFT &kp DOWN &kp UP &kp RIGHT &trans &trans
-   &studio_unlock  &studio_unlock       &trans       &trans       &trans       &trans         &trans   &trans   &trans &trans    &trans &trans
-                                    &kp LGUI     &trans       &kp SPACE      &kp RET  &trans   &kp RALT
+   &trans     &trans        &trans        &trans        &trans        &trans         &trans   &trans   &trans &trans    &trans &trans
+                                     &kp LGUI     &trans       &kp SPACE      &kp RET  &trans   &kp RALT
                         >;
                 };
 
                 raise_layer {
-// -----------------------------------------------------------------------------------------
-// |  TAB |  !  |  @  |  #  |  $  |  %  |   |  ^  |  &  |  *  |  (  |  )  | BKSP |
-// | CTRL |     |     |     |     |     |   |  -  |  =  |  [  |  ]  |  \  |  `   |
-// | SHFT |     |     |     |     |     |   |  _  |  +  |  {  |  }  | "|" |  ~   |
-//                    | GUI |     | SPC |   | ENT |     | ALT |
+// Raise+X toggles the PWM output.
+// Raise+C explicitly sets P0.06 to 100%; Raise+V explicitly sets it to 0%.
                         bindings = <
    &kp  TAB  &kp EXCL &kp AT &kp HASH &kp DLLR &kp PRCNT   &kp CARET &kp AMPS  &kp ASTRK &kp LPAR &kp RPAR &kp BSPC
    &kp LCTRL &trans   &trans &trans   &trans   &trans      &kp MINUS &kp EQUAL &kp LBKT  &kp RBKT &kp BSLH &kp GRAVE
-   &kp LSHFT &trans   &trans &trans   &trans   &trans      &kp UNDER &kp PLUS  &kp LBRC  &kp RBRC &kp PIPE &kp TILDE
+   &kp LSHFT &trans   &bl BL_TOG &bl BL_SET 100 &bl BL_SET 0 &trans      &kp UNDER &kp PLUS  &kp LBRC  &kp RBRC &kp PIPE &kp TILDE
                              &kp LGUI &trans   &kp SPACE   &kp RET   &trans    &kp RALT
                         >;
                 };
