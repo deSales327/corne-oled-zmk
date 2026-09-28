@@ -1,5 +1,0 @@
-#include "azoteq_tps65.dtsi"
-
-&tps65_listener {
-    status = "okay";
-};
