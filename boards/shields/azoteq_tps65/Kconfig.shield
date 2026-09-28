@@ -1,0 +1,5 @@
+config SHIELD_AZOTEQ_TPS65_CENTRAL
+    def_bool $(shields_list_contains,azoteq_tps65_central)
+
+config SHIELD_AZOTEQ_TPS65_PERIPHERAL
+    def_bool $(shields_list_contains,azoteq_tps65_peripheral)

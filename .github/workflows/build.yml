@@ -5,11 +5,11 @@ on:
     branches:
       - master
       - sofle_hybrid_rgb_rev5
-      - clean/corne-oled-no-trackpad
+      - test/tps65-from-working-oled
   pull_request:
     branches:
       - master
-      - clean/corne-oled-no-trackpad
+      - test/tps65-from-working-oled
   workflow_dispatch:
 
 permissions:
