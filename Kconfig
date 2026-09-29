@@ -1,0 +1,4 @@
+config TPS65_PROBE
+    bool "Read-only TPS65 diagnostic counters"
+    depends on BOARD_NICE_NANO_V2 && INPUT && LOG
+    default y if SHIELD_TPS65_PROBE

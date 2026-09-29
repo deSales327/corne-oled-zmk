@@ -5,11 +5,11 @@ on:
     branches:
       - master
       - sofle_hybrid_rgb_rev5
-      - feature/azoteq-tps65-right
+      - test/tps65-59-diagnostics
   pull_request:
     branches:
       - master
-      - feature/azoteq-tps65-right
+      - test/tps65-59-diagnostics
   workflow_dispatch:
 
 permissions:

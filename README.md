@@ -1,3 +1,43 @@
+# TPS65 diagnostics based on build #59
+
+This branch builds ONLY the right half: `corne_right_59_diagnostics.uf2`.
+It uses the exact #59 base (0c94b3a615fe66d83a71b3fe8ddce138254aa59c), including
+its pin routing, IQS5xx driver revision, RGB/OLED settings and split role.
+The left half can keep #59. Do not flash settings_reset for this diagnostic.
+
+Changes: enable USB serial logging, retain boot messages for 8 seconds and
+print a diagnostic summary every 5 seconds. The USB product is named
+`Corne TPS65 probe`. Its serial connection is for logs; the right still sends
+keyboard and pointer events through the split to the left.
+
+`TPS65_PROBE` reports driver readiness and cumulative trackpad event counts.
+Only trackpad events are counted, not typed keyboard keys. `TPS65_PINS` and
+`TPS65_PINCFG` read registers without reconfiguring pins or touching the I2C
+bus. GPIO samples are not voltage measurements. The output latches do not
+prove that the physical NRST/VCC pins have the expected voltage. Interpret IN
+samples alongside PIN_CNF input connectivity. `NFCPINS` reports the actual
+persistent NFC configuration, which can differ from the firmware's DTS.
+
+Interpretation:
+- ready=0: inspect the IQS5xx startup error; hardware initialization failed.
+- ready=1, x/y counters increasing: driver produced pointer data on the right;
+  investigate split transport/left processing next if the cursor remains still.
+- ready=1, counters stay zero: inspect the RDY/I2C path; initialization alone is
+  not proof of successful movement reporting.
+- NFCPINS bit 0 = 1: NFC protection remains enabled; the pin configuration must
+  be corrected before these pins can operate as normal GPIOs.
+
+Connect the RIGHT USB with a data cable, open its serial port at 115200 baud
+with DTR enabled, wait for the repeated summary, then move a finger and tap.
+Capture about 30 seconds. The driver logs startup errors at error level. The
+probe still reports readiness/counters even if the serial port missed boot.
+Do not apply extra pull-ups, change wiring, erase settings or update the driver
+as part of this observation; those require evidence from the results first.
+
+The upstream general guide below is retained for reference. Its settings reset
+advice does not apply to this diagnostic.
+
+---
 [![Build Status](../../actions/workflows/build.yml/badge.svg)](../../actions)
 [![Download Firmware](https://img.shields.io/badge/Download-Firmware-blue?logo=github)](../../releases/latest)
 
