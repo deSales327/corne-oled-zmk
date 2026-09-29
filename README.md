@@ -1,6 +1,28 @@
-# TPS65 diagnostics based on build #59
+# TPS65 startup timing test based on build #59 / diagnostic #87
 
-This branch builds ONLY the right half: `corne_right_59_diagnostics.uf2`.
+This branch builds ONLY `corne_right_tps65_startup_rdy.uf2`. Keep the left
+firmware and current settings; do not use settings_reset for this test.
+
+The local driver in `drivers/tps65_startup` derives from the exact pinned
+AYM1607 driver used by #59 and #87. It holds NRST active for a 1000 ms supply
+settling period, releases reset, waits up to 2000 ms for RDY, then configures
+the sensor. It allows three attempts with a hardware reset between attempts.
+RDY interrupts are disabled until setup completes to prevent input work from
+overlapping configuration. Exhausted attempts leave the interrupt disabled.
+The diagnostic USB identity and event counters remain as in #87.
+
+No pin routing, OLED/RGB settings, power settings, split role, or gesture
+settings change. Only the right is built. This is an experiment: a successful
+build does not prove the physical startup fault is solved. Compare cold boots
+and finger movement against #87 using the same wiring. Boot logs contain
+`TPS65_STARTUP v1`, attempt numbers, RDY wait duration, and failure stage.
+
+The upstream module remains pinned for its device-tree bindings. Its original
+driver compilation is disabled; the local copy is the only IQS5xx driver linked.
+
+## Inherited diagnostic reference (#87)
+
+The preceding diagnostic built ONLY `corne_right_59_diagnostics.uf2`.
 It uses the exact #59 base (0c94b3a615fe66d83a71b3fe8ddce138254aa59c), including
 its pin routing, IQS5xx driver revision, RGB/OLED settings and split role.
 The left half can keep #59. Do not flash settings_reset for this diagnostic.

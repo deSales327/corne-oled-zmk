@@ -1,4 +1,7 @@
 if(CONFIG_TPS65_PROBE)
   zephyr_library()
   zephyr_library_sources(src/tps65_probe.c)
+  if(CONFIG_TPS65_STARTUP_TEST)
+    zephyr_library_sources(drivers/tps65_startup/iqs5xx.c)
+  endif()
 endif()

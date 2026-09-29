@@ -2,3 +2,11 @@ config TPS65_PROBE
     bool "Read-only TPS65 diagnostic counters"
     depends on BOARD_NICE_NANO_V2 && INPUT && LOG
     default y if SHIELD_TPS65_PROBE
+
+config TPS65_STARTUP_TEST
+    bool "TPS65 bounded startup with RDY synchronization"
+    depends on TPS65_PROBE && GPIO && I2C && DT_HAS_AZOTEQ_IQS5XX_ENABLED
+    depends on !INPUT_AZOTEQ_IQS5XX
+    help
+      Compile the local derivative of the pinned IQS5xx driver. The original
+      driver must be disabled to avoid two definitions of the same device.
