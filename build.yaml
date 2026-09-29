@@ -4,11 +4,11 @@ include:
     shield: corne_left nice_oled azoteq_tps65_central corne_power_test
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_STUDIO_LOCKING=n
-    artifact-name: corne_left_power_test
+    artifact-name: corne_left_power_recovery
 
   - board: nice_nano_v2
     shield: corne_right nice_oled azoteq_tps65_peripheral corne_power_test
-    artifact-name: corne_right_power_test
+    artifact-name: corne_right_power_recovery
 
   - board: nice_nano_v2
     shield: settings_reset

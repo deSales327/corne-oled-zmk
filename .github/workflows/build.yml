@@ -5,11 +5,11 @@ on:
     branches:
       - master
       - sofle_hybrid_rgb_rev5
-      - test/corne-power-startup
+      - test/corne-power-settings-recovery
   pull_request:
     branches:
       - master
-      - test/corne-power-startup
+      - test/corne-power-settings-recovery
   workflow_dispatch:
 
 permissions:

@@ -1,8 +1,7 @@
-/* Keep pin/polarity information for the diagnostic initializer, but do not
- * instantiate the driver that restores persisted external-power state.
- */
+/* Stock nice!nano v2 power driver; settle before OLED/TPS65 initialization. */
 &{/EXT_POWER} {
-    status = "disabled";
+    status = "okay";
+    init-delay-ms = <500>;
 };
 
 /* RGB data is held low by the diagnostic initializer. */

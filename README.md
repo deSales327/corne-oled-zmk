@@ -1,3 +1,31 @@
+# Power settings recovery diagnostic
+
+This branch restores the standard nice!nano v2 EXT_POWER driver, with a 500 ms
+settling delay. A settings handler for exactly `ext_power/state/EXT_POWER`
+ignores the previous boolean during load and saves `true` at commit. This avoids
+an off pulse after OLED/TPS65 hardware initialization. Bluetooth bonds, Studio
+settings and saved RGB preferences are not erased. RGB, deep sleep and display
+blanking remain disabled for the USB diagnostic. OLEDs, keymap, Studio and TPS65
+pinout are otherwise unchanged from the previous power test.
+
+Flash `corne_left_power_recovery.uf2` to the LEFT first, without settings_reset.
+Leave powered for 10 seconds, unplug USB for 10 seconds, reconnect and check OLED
+and VCC. Repeat several cold boots. Test the right file only after validating the
+left; the right side was reported working and does not need changing first.
+`settings_reset.uf2` is included for recovery only, not for this test.
+
+This addresses a plausible persistent EXT_POWER-off state. Compilation does not
+prove hardware recovery. The previous direct-GPIO diagnostic disabled the
+settings handler but did not repair older stored values; the #58/reset comparison
+alone cannot establish which firmware originally saved the bad state. The new
+version restores the stock power initialization as well as repairing that key.
+An old RGB-off preference can still suppress LEDs when returning to RGB firmware.
+
+The upstream general guide below is retained for reference. Its broad reset
+advice does not apply to this diagnostic, which should first be tested without
+resetting settings.
+
+---
 [![Build Status](../../actions/workflows/build.yml/badge.svg)](../../actions)
 [![Download Firmware](https://img.shields.io/badge/Download-Firmware-blue?logo=github)](../../releases/latest)
 
