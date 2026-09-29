@@ -1,0 +1,2 @@
+config SHIELD_CORNE_POWER_TEST
+    def_bool $(shields_list_contains,corne_power_test)

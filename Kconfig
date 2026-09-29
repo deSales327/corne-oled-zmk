@@ -1,0 +1,4 @@
+config CORNE_POWER_TEST
+    bool "Corne USB power/startup diagnostic"
+    depends on BOARD_NICE_NANO_V2
+    default y if SHIELD_CORNE_POWER_TEST

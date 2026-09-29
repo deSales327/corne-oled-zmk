@@ -5,11 +5,11 @@ on:
     branches:
       - master
       - sofle_hybrid_rgb_rev5
-      - test/tps65-from-working-oled
+      - test/corne-power-startup
   pull_request:
     branches:
       - master
-      - test/tps65-from-working-oled
+      - test/corne-power-startup
   workflow_dispatch:
 
 permissions:

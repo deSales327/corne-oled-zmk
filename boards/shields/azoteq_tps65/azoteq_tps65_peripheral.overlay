@@ -61,7 +61,8 @@
         bottom-beta = <5>;
         stationary-threshold = <5>;
 
-        switch-xy;
+        /* Match the known-working vertical-orientation build #58. */
+        flip-y;
     };
 };
 

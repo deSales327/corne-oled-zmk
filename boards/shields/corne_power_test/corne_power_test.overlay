@@ -1,0 +1,15 @@
+/* Keep pin/polarity information for the diagnostic initializer, but do not
+ * instantiate the driver that restores persisted external-power state.
+ */
+&{/EXT_POWER} {
+    status = "disabled";
+};
+
+/* RGB data is held low by the diagnostic initializer. */
+&spi3 {
+    status = "disabled";
+};
+
+&led_strip {
+    status = "disabled";
+};
