@@ -33,6 +33,7 @@ static void observe_tps65(struct input_event *event) {
 INPUT_CALLBACK_DEFINE(DEVICE_DT_GET(DT_NODELABEL(tps65)), observe_tps65);
 
 static struct k_work_delayable report_work;
+void tps65_bus_capture_report(void);
 
 static void report_status(struct k_work *work) {
     ARG_UNUSED(work);
@@ -56,6 +57,7 @@ static void report_status(struct k_work *work) {
     LOG_INF("TPS65_PINCFG SDA=0x%08x SCL=0x%08x RDY=0x%08x",
             (unsigned)NRF_P0->PIN_CNF[10], (unsigned)NRF_P0->PIN_CNF[9],
             (unsigned)NRF_P1->PIN_CNF[6]);
+    tps65_bus_capture_report();
     k_work_schedule(&report_work, K_SECONDS(5));
 }
 

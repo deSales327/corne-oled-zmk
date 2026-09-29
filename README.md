@@ -1,4 +1,28 @@
-# TPS65 diagnostics based on build #59
+# TPS65 bus capture based on diagnostic #87
+
+Builds ONLY `corne_right_tps65_bus_capture.uf2`. Keep the left firmware and
+settings; do not flash settings_reset. The original pinned IQS5xx driver,
+startup delays and pin routing are unchanged from #87.
+
+`BUS89` captures 2000 register snapshots at a requested 1 ms interval, starting
+at POST_KERNEL priority 89 before the sensor driver (priority 90). The timer
+reads GPIO/TWI1/NVIC registers only; it does not reconfigure pins, access I2C,
+clear peripheral events, or log from its interrupt. It stops after the capture.
+Every five seconds the existing probe repeats the stored summary and selected
+snapshots, so opening USB late does not lose the evidence.
+
+This is coarse digital sampling, NOT an I2C trace or voltage measurement.
+Short events may be missed and sampling adds a small interrupt workload.
+Counters cover all observed controller-active periods within the capture.
+SDA/SCL low counters exclude samples with a disconnected GPIO input.
+`pins`: bit 0 SDA, 1 SCL, 2 RDY, 3 NRST output latch.
+`events`: bit 0 STOPPED, 1 RXDREADY, 2 TXDSENT, 3 ERROR, 4 BB, 5 SUSPENDED.
+`first` and `last` are controller-active samples; `low` is the first active
+sample with a connected SDA/SCL input low; `after` is the first inactive
+sample following observed activity. Register fields are read sequentially,
+not atomically, and must be interpreted alongside the transfer error log.
+
+## Inherited diagnostic reference (#87)
 
 This branch builds ONLY the right half: `corne_right_59_diagnostics.uf2`.
 It uses the exact #59 base (0c94b3a615fe66d83a71b3fe8ddce138254aa59c), including
