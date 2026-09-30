@@ -6,6 +6,7 @@ on:
       - master
       - sofle_hybrid_rgb_rev5
       - feature/azoteq-tps65-right
+      - test/tps65-streaming-mode
   pull_request:
     branches:
       - master
