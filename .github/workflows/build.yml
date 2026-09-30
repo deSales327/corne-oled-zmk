@@ -6,6 +6,7 @@ on:
       - master
       - sofle_hybrid_rgb_rev5
       - feature/azoteq-tps65-right
+      - test/tps65-rgb-no-idle
   pull_request:
     branches:
       - master
