@@ -54,3 +54,8 @@
         device = <&tps65>;
     };
 };
+
+/* P0.09/P0.10 are NFC pins until explicitly configured as GPIO. */
+&uicr {
+    nfct-pins-as-gpios;
+};

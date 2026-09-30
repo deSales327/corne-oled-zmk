@@ -4,6 +4,11 @@ Firmware contains the normal Corne keyboard and a TPS65 connected directly
 to the left/central. USB keyboard and mouse reports come from the left;
 the right supplies its keys over the existing BLE split.
 
+P0.09/P0.10 are explicitly configured as GPIO through the nRF UICR
+property; this is required for their use as SDA/SCL and avoids relying on a
+previous firmware or bootloader setting. It may cause one automatic reboot
+when first applied.
+
 No OLED, RGB/backlight, ZMK Studio, battery reporting, USB logging, custom
 probe threads, pointer split transport, or nice-oled dependency. OLED/i2c0
 and spi3 nodes are disabled. Deep sleep is disabled and the idle threshold
@@ -18,6 +23,7 @@ Inspected commit: b7c589692c46ae5980a378768b0924d37a1cdc38.
 
 That test moved the sensor from the right peripheral to the left central,
 using P0.10/P0.09 and P1.04/P1.06, and changed the listener to the local sensor.
+The #100 left overlay did not explicitly configure NFC pins as GPIO.
 The right build lost its trackpad shield. It still built nice_oled on both
 halves and Studio on the left. Its shared DTS also retained a pointer split
 node even though the listener was local. It reverted orientation from the
