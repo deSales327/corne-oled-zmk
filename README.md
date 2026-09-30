@@ -76,7 +76,7 @@ advice does not apply to this diagnostic.
 
 
 # Corne Keyboard Guide
-This guide is for flashing the Ergomech Corne Keyboard. The Corne is 6Ã—3+3 keys column-staggered split keyboard, using Cherry or Choc switches.
+This guide is for flashing the Ergomech Corne Keyboard. The Corne is 6×3+3 keys column-staggered split keyboard, using Cherry or Choc switches.
 
 # ErgoMech Corne Wireless
 The Ergomech Corne Wireless uses a Nice!Nano microcontroller and runs the ZMK firmware. This guide will show you how to flash the ZMK firmware to the Nice!Nano microcontroller.
