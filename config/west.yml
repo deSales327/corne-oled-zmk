@@ -9,6 +9,9 @@ manifest:
     - name: aym1607
       url-base: https://github.com/AYM1607
 
+    - name: desales327
+      url-base: https://github.com/deSales327
+
   projects:
     - name: zmk
       remote: zmkfirmware
@@ -20,8 +23,8 @@ manifest:
       revision: 46f824abb2bd41f1287c5c68abd14122af6042a3
 
     - name: zmk-driver-azoteq-iqs5xx
-      remote: aym1607
-      revision: 27321f0232b50f0af31eb27ff97d539933467ea4
+      remote: desales327
+      revision: bfd9e86b63d223d0cb2fc69ebf4f7d5456dfd6f0
 
   self:
     path: config
