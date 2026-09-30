@@ -1,16 +1,21 @@
-# TPS65 GPIO line and product identification test
+# TPS65 GPIO identification test with internal pull-ups
 
-Builds ONLY `corne_right_tps65_gpio_identify.uf2`. Keep the left firmware and
+Builds ONLY `corne_right_tps65_gpio_pullups.uf2`. Keep the left firmware and
 settings; do not flash settings_reset. This is a temporary diagnostic: the
 normal TPS65 movement driver and its split input are disabled, so the cursor
 is NOT expected to move with this firmware. Keyboard/OLED/RGB settings stay
 at the #87 baseline. No physical rewiring is needed.
 
 At five seconds a separate thread holds the sensor in reset, configures the
-same SDA P0.10 / SCL P0.09 pins as open-drain inputs/outputs without internal
+same SDA P0.10 / SCL P0.09 pins as open-drain inputs/outputs WITH internal
 pull-ups, and tests independent control of each line. NRST and RDY use the
 existing P1.04 / P1.06 mapping. Expected line samples are 3,1,2,3 (SDA bit0,
 SCL bit1): both released, SCL low, SDA low, both released again.
+
+The only functional change from #91 is enabling GPIO_PULL_UP on SDA and SCL.
+The log marker is `GPIO_ID v2 pullups=internal`. This tests whether missing
+or insufficient pull-ups explain the earlier line test failure; it does not
+prove the physical wiring is correct or establish a production bus design.
 
 If the line test passes, it releases reset, waits at most 2000 ms for RDY,
 and attempts a slow software I2C read of product register 0x0000 at 0x74.

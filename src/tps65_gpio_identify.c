@@ -9,11 +9,11 @@ LOG_MODULE_REGISTER(tps65_gpio_test, LOG_LEVEL_INF);
 
 static const struct gpio_dt_spec sda = {
     .port = DEVICE_DT_GET(DT_NODELABEL(gpio0)), .pin = 10,
-    .dt_flags = GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN,
+    .dt_flags = GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN | GPIO_PULL_UP,
 };
 static const struct gpio_dt_spec scl = {
     .port = DEVICE_DT_GET(DT_NODELABEL(gpio0)), .pin = 9,
-    .dt_flags = GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN,
+    .dt_flags = GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN | GPIO_PULL_UP,
 };
 static const struct gpio_dt_spec rst = GPIO_DT_SPEC_GET(DT_NODELABEL(tps65), reset_gpios);
 static const struct gpio_dt_spec rdy = GPIO_DT_SPEC_GET(DT_NODELABEL(tps65), rdy_gpios);
@@ -201,7 +201,7 @@ static void probe_thread(void *a, void *b, void *c) {
     (void)gpio_pin_set_dt(&scl, 1);
     (void)gpio_pin_set_dt(&rst, 0);
     for (;;) {
-        LOG_INF("GPIO_ID v1 result=%d stage=%u levels=%d,%d,%d,%d expected=3,1,2,3",
+        LOG_INF("GPIO_ID v2 pullups=internal result=%d stage=%u levels=%d,%d,%d,%d expected=3,1,2,3",
                 result, failed_stage, levels[0], levels[1], levels[2], levels[3]);
         LOG_INF("GPIO_ID rdy_reset=%d rdy_ready=%d ack_count=%u ack_mask=0x%x product_valid=%d product=0x%04x",
                 rdy_reset, rdy_ready, ack_count, ack_mask, product_valid, product);
