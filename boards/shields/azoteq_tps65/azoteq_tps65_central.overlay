@@ -32,15 +32,9 @@
         reset-gpios = <&pro_micro 8 GPIO_ACTIVE_LOW>;
         rdy-gpios = <&pro_micro 9 GPIO_ACTIVE_HIGH>;
 
-        one-finger-tap;
-        press-and-hold;
-        press-and-hold-time = <250>;
-        two-finger-tap;
 
-        scroll;
-        natural-scroll-y;
-        natural-scroll-x;
 
+        /* Movement only: no tap, hold, two-finger click or scrolling. */
         bottom-beta = <5>;
         stationary-threshold = <5>;
 

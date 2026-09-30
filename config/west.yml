@@ -11,6 +11,6 @@ manifest:
       import: app/west.yml
     - name: zmk-driver-azoteq-iqs5xx
       remote: desales327
-      revision: bec78d530d896d5244a26d7bb39cf3e3ed69e25c
+      revision: e73fb0ab7a55ddada91af12b5c10c15e9c0e7cde
   self:
     path: config

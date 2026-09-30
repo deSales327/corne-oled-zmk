@@ -7,7 +7,7 @@ on:
       - sofle_hybrid_rgb_rev5
       - feature/azoteq-tps65-right
       - test/tps65-streaming-mode
-      - minimal/corne-tps65-left
+      - minimal/corne-tps65-no-buttons
   pull_request:
     branches:
       - master
@@ -18,6 +18,13 @@ permissions:
   contents: write
 
 jobs:
+  gesture_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify disabled gestures never emit button events
+        run: python3 tests/test_disabled_gestures.py
+
   build:
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3
 

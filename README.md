@@ -1,3 +1,34 @@
+# Movement-only Corne TPS65 test
+
+The #102 user report was that the laptop touchpad could move the cursor but
+could not click while the Corne was connected; clicks recovered on unplug.
+This is consistent with a mouse button being held by the Corne, not proof.
+The driver press-and-hold path sends a button-down and requires a later
+sensor read to observe release. Read errors or no further RDY processing
+can leave that hold pressed. #102 still enabled that gesture.
+
+This variant disables tap, press-and-hold, two-finger tap, and scrolling in
+the left TPS65 node. It pins a driver fix that honors those disabled settings
+while processing reported gesture flags, including stale flags if sensor
+setup fails. All gesture settings in this build are false, so the handler
+cannot enter a button-press path. The device provides cursor movement only.
+The right keyboard firmware is unchanged. No OLED/RGB/Studio/logging added.
+This does not establish that continuous movement or RDY handling is fixed.
+
+Driver revision: e73fb0ab7a55ddada91af12b5c10c15e9c0e7cde, based on
+bec78d530d896d5244a26d7bb39cf3e3ed69e25c (streaming mode).
+Regression tests execute the actual pinned runtime handler with simulated
+I2C frames: every combination of 8-bit gesture flags with movement and idle,
+read failures, reset indication, and enabled-gesture compatibility cases.
+
+Flash corne_left_keyboard_trackpad_movement_only.uf2 on the LEFT. Keep the
+#102 right firmware or flash corne_right_keyboard_minimal.uf2 from the ZIP.
+No settings_reset is needed for this change. Disconnect both halves from
+USB/Bluetooth before flashing to clear any old host button-down state.
+The previous left-side TPS65 wiring remains the same.
+
+## Previous inspection and minimal baseline
+
 # Minimal Corne with TPS65 on the left
 
 Firmware contains the normal Corne keyboard and a TPS65 connected directly
