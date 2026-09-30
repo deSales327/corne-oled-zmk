@@ -24,7 +24,7 @@ manifest:
 
     - name: zmk-driver-azoteq-iqs5xx
       remote: desales327
-      revision: bfd9e86b63d223d0cb2fc69ebf4f7d5456dfd6f0
+      revision: bec78d530d896d5244a26d7bb39cf3e3ed69e25c
 
   self:
     path: config
