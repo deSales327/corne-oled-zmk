@@ -1,12 +1,17 @@
-# TPS65 bus capture based on diagnostic #87
+# TPS65 TWIM test based on diagnostic #89
 
-Builds ONLY `corne_right_tps65_bus_capture.uf2`. Keep the left firmware and
+Builds ONLY `corne_right_tps65_twim_probe.uf2`. Keep the left firmware and
 settings; do not flash settings_reset. The original pinned IQS5xx driver,
 startup delays and pin routing are unchanged from #87.
 
-`BUS89` captures 2000 register snapshots at a requested 1 ms interval, starting
+The functional change from #89 is `i2c1` compatible: `nordic,nrf-twi` becomes
+`nordic,nrf-twim`. Address 0x74, 100 kHz, SDA P0.10 and SCL P0.09 remain the
+same. Capture reads the corresponding TWIM registers and DMA byte counters.
+This tests the other Nordic I2C implementation; it is not a confirmed fix.
+
+`TWIM_PROBE` captures 2000 register snapshots at a requested 1 ms interval, starting
 at POST_KERNEL priority 89 before the sensor driver (priority 90). The timer
-reads GPIO/TWI1/NVIC registers only; it does not reconfigure pins, access I2C,
+reads GPIO/TWIM1/NVIC registers only; it does not reconfigure pins, access I2C,
 clear peripheral events, or log from its interrupt. It stops after the capture.
 Every five seconds the existing probe repeats the stored summary and selected
 snapshots, so opening USB late does not lose the evidence.
@@ -16,7 +21,11 @@ Short events may be missed and sampling adds a small interrupt workload.
 Counters cover all observed controller-active periods within the capture.
 SDA/SCL low counters exclude samples with a disconnected GPIO input.
 `pins`: bit 0 SDA, 1 SCL, 2 RDY, 3 NRST output latch.
-`events`: bit 0 STOPPED, 1 RXDREADY, 2 TXDSENT, 3 ERROR, 4 BB, 5 SUSPENDED.
+`events`: bit 0 STOPPED, 1 LASTRX, 2 LASTTX, 3 ERROR, 4 TXSTARTED,
+5 SUSPENDED, 6 RXSTARTED. `started` is the first observed STARTED event.
+TWIM can remain enabled between transfers, so active samples are not a
+measurement of transaction duration. The DMA amount/count fields help show
+progress, but a sample may contain register values left by an earlier transfer.
 `first` and `last` are controller-active samples; `low` is the first active
 sample with a connected SDA/SCL input low; `after` is the first inactive
 sample following observed activity. Register fields are read sequentially,
