@@ -1,9 +1,17 @@
-# TPS65 continuous RDY diagnostic (based on #91)
+# TPS65 continuous RDY diagnostic, awake variant (based on #94)
 
-Builds ONLY `corne_right_tps65_rdy_monitor.uf2`. Keep the left firmware and
+Builds ONLY `corne_right_tps65_rdy_awake.uf2`. Keep the left firmware and
 settings; do not flash settings_reset. Cursor movement is not expected:
 this temporary diagnostic disables the normal TPS65 driver and split input.
-Keyboard/OLED/RGB, pin mapping and dependencies are unchanged from #91.
+Pin mapping, sensor diagnostic, dependencies and keymap are unchanged from #94.
+For this right-half diagnostic, RGB automatic idle/USB shutoff and OLED
+blanking on idle are disabled. Deep sleep remains disabled; idle timeout is
+set to the maximum signed 32-bit value (2147483647 ms). Do not set it to zero:
+ZMK v0.3.0 treats zero as immediate idle, not as disabling the idle timer.
+The left half keeps its existing firmware and its own idle behavior.
+RGB brightness/effect and external-power settings remain unchanged.
+This eliminates the automatic idle shutoff variable; it does not prove that
+shutoff caused the late RDY response seen in #94.
 SDA P0.10 / SCL P0.09 remain open drain WITHOUT internal pull-ups.
 NRST P1.04 and RDY P1.06 keep the existing mapping.
 

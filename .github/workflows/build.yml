@@ -5,11 +5,11 @@ on:
     branches:
       - master
       - sofle_hybrid_rgb_rev5
-      - test/tps65-rdy-monitor
+      - test/tps65-rdy-awake
   pull_request:
     branches:
       - master
-      - test/tps65-rdy-monitor
+      - test/tps65-rdy-awake
   workflow_dispatch:
 
 permissions:
