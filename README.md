@@ -15,7 +15,7 @@ cannot enter a button-press path. The device provides cursor movement only.
 The right keyboard firmware is unchanged. No OLED/RGB/Studio/logging added.
 This does not establish that continuous movement or RDY handling is fixed.
 
-Driver revision: e73fb0ab7a55ddada91af12b5c10c15e9c0e7cde, based on
+Driver revision: e0f5e66e61e9daf961122f2f0a81be6b51b0ac9c, based on
 bec78d530d896d5244a26d7bb39cf3e3ed69e25c (streaming mode).
 Regression tests execute the actual pinned runtime handler with simulated
 I2C frames: every combination of 8-bit gesture flags with movement and idle,

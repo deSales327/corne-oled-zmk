@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 from urllib.request import urlopen
 
-REV = "e73fb0ab7a55ddada91af12b5c10c15e9c0e7cde"
+REV = "e0f5e66e61e9daf961122f2f0a81be6b51b0ac9c"
 BASE = f"https://raw.githubusercontent.com/deSales327/zmk-driver-azoteq-iqs5xx/{REV}/drivers/input/"
 source = urlopen(BASE + "iqs5xx.c", timeout=30).read().decode()
 header = urlopen(BASE + "iqs5xx.h", timeout=30).read().decode()
@@ -26,6 +26,7 @@ stubs = r"""
 #define K_FOREVER 0
 #define K_MSEC(ms) (ms)
 #define INPUT_BTN_0 0x100
+#define INPUT_BTN_1 0x101
 #define INPUT_REL_X 0
 #define INPUT_REL_Y 1
 #define INPUT_REL_HWHEEL 6
