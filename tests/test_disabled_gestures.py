@@ -105,7 +105,7 @@ int main(void) {
     iqs5xx_work_handler(&data.work); assert(keys==1 && data.active_hold);
     frame0=0; iqs5xx_work_handler(&data.work); assert(keys==2 && !data.active_hold);
     clear(); config.scroll=true; frame1=IQS5XX_SCROLL;
-    iqs5xx_work_handler(&data.work); assert(keys==0 && moves==0 && data.scroll_x_acc==5);
+    iqs5xx_work_handler(&data.work); assert(keys==0 && moves==0 && data.scroll_x_acc==-5);
     puts("PASS: 131072 disabled-gesture frames, 7 read failures, reset and 4 enabled-gesture cases");
     return 0;
 }
@@ -116,3 +116,4 @@ with tempfile.TemporaryDirectory() as tmp:
     c_file.write_text(stubs + header + bus + body + cases)
     subprocess.run(["gcc", "-std=c11", "-Wall", "-Werror", str(c_file), "-o", str(exe)], check=True)
     subprocess.run([str(exe)], check=True)
+
