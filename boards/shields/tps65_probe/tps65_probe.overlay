@@ -1,1 +1,4 @@
-/* Observe build #59 without changing pin routing, pull-ups or NFC settings. */
+/* Reserve the existing trackpad pins for the bounded GPIO identification test. */
+&i2c1 { status = "disabled"; };
+&tps65 { status = "disabled"; };
+&tps65_split { status = "disabled"; };
