@@ -34,7 +34,13 @@ static void k_msleep(int ms) { now_us+=(int64_t)ms*1000; }
 """
 cases = r"""
 static int simulated_get(const struct gpio_dt_spec *p) {
-    if (p==&rdy) return scenario==2 ? 0 : !state[rst.pin];
+    if (p==&rdy) {
+        if (scenario==2) return 0;
+        if (scenario==6) return !state[rst.pin] && now_us>=6000000;
+        if (scenario==7 && now_us>=6000000) return -EIO;
+        if (scenario==7) return 0;
+        return !state[rst.pin];
+    }
     if (p==&scl) {
         if (scenario==1) return 1; /* host cannot pull clock low */
         if (stage>=10 && scenario==3) return 0; /* clock held low */
@@ -56,6 +62,7 @@ static int simulated_get(const struct gpio_dt_spec *p) {
 static void clear(int mode) {
     scenario=mode; now_us=0; id_bit=stretch_reads=0;
     stage=ack_count=ack_mask=product=0; product_valid=false;
+    reset_released_ms=0; first_ready_ms=-1;
     for (int i=0;i<4;i++) { state[i]=0; levels[i]=-1; }
 }
 int main(void) {
@@ -71,7 +78,25 @@ int main(void) {
     clear(4); assert(run_test()==-ENXIO && stage==11);
     assert(ack_count==1 && ack_mask==0 && !product_valid);
     clear(5); assert(run_test()==0 && product_valid && stretch_reads>=40);
-    puts("PASS: 6 GPIO/identity scenarios using actual diagnostic functions");
+    clear(6); int result=run_test();
+    assert(result==-ETIMEDOUT && stage==4 && ack_count==0);
+    release_lines(result);
+    while (stage==4) { k_msleep(1); result=monitor_step(result); }
+    assert(result==0 && product_valid && first_ready_ms>=5800);
+    unsigned completed_acks=ack_count;
+    assert(monitor_step(result)==0 && ack_count==completed_acks);
+    release_lines(result);
+    assert(state[sda.pin]==1 && state[scl.pin]==1 && state[rst.pin]==0);
+    clear(2); result=run_test(); release_lines(result);
+    for (int i=0;i<30000;i++) { k_msleep(1); result=monitor_step(result); }
+    assert(result==-ETIMEDOUT && stage==4 && ack_count==0 && first_ready_ms==-1);
+    clear(7); result=run_test(); release_lines(result); now_us=6000000;
+    assert(monitor_step(result)==-EIO && stage==5 && ack_count==0);
+    clear(4); result=run_test(); release_lines(result);
+    assert(monitor_step(result)==-ENXIO && ack_count==1);
+    clear(1); result=run_test(); release_lines(result);
+    assert(monitor_step(result)==-EIO && stage==2 && ack_count==0);
+    puts("PASS: 11 GPIO/identity scenarios including late RDY, permanent low, read error and no retries");
     return 0;
 }
 """

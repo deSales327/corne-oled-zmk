@@ -22,6 +22,7 @@ BUILD_ASSERT(!DT_NODE_HAS_STATUS(DT_NODELABEL(i2c1), okay), "Hardware I2C1 must 
 BUILD_ASSERT(!DT_NODE_HAS_STATUS(DT_NODELABEL(tps65), okay), "Sensor driver must be disabled");
 
 static int64_t transfer_deadline;
+static int64_t reset_released_ms, first_ready_ms = -1;
 static unsigned ack_count, ack_mask;
 static unsigned stage;
 static int levels[4], rdy_reset = -1, rdy_ready = -1;
@@ -150,6 +151,26 @@ static int identify(void) {
     return 0;
 }
 
+/* Continue only the RDY wait. A failed line test or I2C transaction is not retried. */
+static int monitor_step(int result) {
+    if (stage != 4 || result != -ETIMEDOUT) { return result; }
+    rdy_ready = gpio_pin_get_dt(&rdy);
+    if (rdy_ready < 0) { stage = 5; return rdy_ready; }
+    if (!rdy_ready) { return result; }
+    first_ready_ms = k_uptime_get() - reset_released_ms;
+    return identify();
+}
+
+static void release_lines(int result) {
+    if (stage >= 10 && result < 0) {
+        transfer_deadline = k_uptime_get() + 500;
+        (void)stop_condition();
+    }
+    (void)gpio_pin_set_dt(&sda, 1);
+    (void)gpio_pin_set_dt(&scl, 1);
+    (void)gpio_pin_set_dt(&rst, 0);
+}
+
 static int run_test(void) {
     stage = 1;
     if (!gpio_is_ready_dt(&sda) || !gpio_is_ready_dt(&scl) ||
@@ -176,12 +197,12 @@ static int run_test(void) {
     if (levels[2] != 2 || levels[3] != 3) { return -EIO; }
 
     stage = 4; TRY(gpio_pin_set_dt(&rst, 0));
+    reset_released_ms = k_uptime_get();
     k_msleep(10);
     int64_t ready_until = k_uptime_get() + 2000;
     do {
-        rdy_ready = gpio_pin_get_dt(&rdy);
-        if (rdy_ready < 0) { return rdy_ready; }
-        if (rdy_ready) { return identify(); }
+        int result = monitor_step(-ETIMEDOUT);
+        if (stage != 4) { return result; }
         k_msleep(1);
     } while (k_uptime_get() < ready_until);
     return -ETIMEDOUT;
@@ -191,21 +212,26 @@ static void probe_thread(void *a, void *b, void *c) {
     ARG_UNUSED(a); ARG_UNUSED(b); ARG_UNUSED(c);
     for (int i = 0; i < 4; i++) { levels[i] = -1; }
     int result = run_test();
-    unsigned failed_stage = stage;
-    /* Best-effort STOP with a fresh bounded deadline, then release lines/reset. */
-    if (failed_stage >= 10 && result < 0) {
-        transfer_deadline = k_uptime_get() + 500;
-        (void)stop_condition();
-    }
-    (void)gpio_pin_set_dt(&sda, 1);
-    (void)gpio_pin_set_dt(&scl, 1);
-    (void)gpio_pin_set_dt(&rst, 0);
+    release_lines(result);
+    int64_t next_report = 0;
     for (;;) {
-        LOG_INF("GPIO_ID v1 result=%d stage=%u levels=%d,%d,%d,%d expected=3,1,2,3",
-                result, failed_stage, levels[0], levels[1], levels[2], levels[3]);
-        LOG_INF("GPIO_ID rdy_reset=%d rdy_ready=%d ack_count=%u ack_mask=0x%x product_valid=%d product=0x%04x",
-                rdy_reset, rdy_ready, ack_count, ack_mask, product_valid, product);
-        k_msleep(5000);
+        if (stage == 4 && result == -ETIMEDOUT) {
+            result = monitor_step(result);
+            if (stage != 4) { release_lines(result); }
+        }
+        if (k_uptime_get() >= next_report) {
+            int live_rdy = gpio_is_ready_dt(&rdy) ? gpio_pin_get_dt(&rdy) : -ENODEV;
+            LOG_INF("GPIO_ID v3 monitor result=%d stage=%u levels=%d,%d,%d,%d expected=3,1,2,3",
+                    result, stage, levels[0], levels[1], levels[2], levels[3]);
+            LOG_INF("GPIO_ID rdy_reset=%d rdy_ready=%d ack_count=%u ack_mask=0x%x product_valid=%d product=0x%04x",
+                    rdy_reset, rdy_ready, ack_count, ack_mask, product_valid, product);
+            LOG_INF("RDY_MON live=%d waiting=%d first_high_ms=%lld since_reset_ms=%lld",
+                    live_rdy, stage == 4 && result == -ETIMEDOUT,
+                    (long long)first_ready_ms,
+                    (long long)(k_uptime_get() - reset_released_ms));
+            next_report = k_uptime_get() + 5000;
+        }
+        k_msleep(stage == 4 && result == -ETIMEDOUT ? 1 : 100);
     }
 }
 

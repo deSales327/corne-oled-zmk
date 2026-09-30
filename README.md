@@ -1,33 +1,35 @@
-# TPS65 GPIO line and product identification test
+# TPS65 continuous RDY diagnostic (based on #91)
 
-Builds ONLY `corne_right_tps65_gpio_identify.uf2`. Keep the left firmware and
-settings; do not flash settings_reset. This is a temporary diagnostic: the
-normal TPS65 movement driver and its split input are disabled, so the cursor
-is NOT expected to move with this firmware. Keyboard/OLED/RGB settings stay
-at the #87 baseline. No physical rewiring is needed.
+Builds ONLY `corne_right_tps65_rdy_monitor.uf2`. Keep the left firmware and
+settings; do not flash settings_reset. Cursor movement is not expected:
+this temporary diagnostic disables the normal TPS65 driver and split input.
+Keyboard/OLED/RGB, pin mapping and dependencies are unchanged from #91.
+SDA P0.10 / SCL P0.09 remain open drain WITHOUT internal pull-ups.
+NRST P1.04 and RDY P1.06 keep the existing mapping.
 
-At five seconds a separate thread holds the sensor in reset, configures the
-same SDA P0.10 / SCL P0.09 pins as open-drain inputs/outputs without internal
-pull-ups, and tests independent control of each line. NRST and RDY use the
-existing P1.04 / P1.06 mapping. Expected line samples are 3,1,2,3 (SDA bit0,
-SCL bit1): both released, SCL low, SDA low, both released again.
+At five seconds the independent diagnostic thread holds reset for 100 ms,
+tests independent SDA/SCL control (expected samples 3,1,2,3), releases reset
+and polls RDY. After the initial two seconds, a low RDY no longer ends the
+test: polling continues every millisecond without another reset. On the
+first observed high it makes ONE product-identification transaction.
+A failed line test or failed I2C transaction is not retried automatically.
+This does not block the keyboard workqueue and does not write settings.
 
-If the line test passes, it releases reset, waits at most 2000 ms for RDY,
-and attempts a slow software I2C read of product register 0x0000 at 0x74.
-SCL physical input is checked on every rise; stretching is allowed for up
-to 500 ms with a 2500 ms total transaction deadline. It then sends the B000
-end-window command to 0xEEEE. GPIO outputs never drive a high level. These
-are temporary pin operations and volatile protocol commands, not settings
-or flash writes. All lines are released after the one-shot test.
+`GPIO_ID v3 monitor` reports the test outcome. `RDY_MON live` is a fresh
+GPIO sample every five seconds; `waiting` indicates ongoing RDY polling;
+`first_high_ms` is time from reset release to the first observed high (-1
+means none); `since_reset_ms` is elapsed time since reset release, meaningful
+only if stage 4 was reached. Stage 4 is waiting, 5 a RDY read error, 10-24
+protocol operations, and 25 completion. Repeated GPIO_ID results describe
+the same transaction; RDY_MON live is resampled even after it finishes.
 
-`GPIO_ID` results repeat every five seconds. Stages: 1 GPIO setup; 2/3 line
-test; 4 RDY wait; 10 START; 11 write address; 12/13 register address; 14
-repeated START; 15 read address; 16/17 product bytes; 18 STOP; 19-24 end-window
-command; 25 complete. `product_valid` means both bytes were read and the
-first STOP succeeded; verify the value, it alone is not proof of sensor health.
-An ACK mask bit of 1 means that transmitted byte was acknowledged; count
-includes NACKed bytes. -6 is NACK, -16 is SDA busy at START, -110 is timeout,
-and -5 in stage 2/3 is an unexpected line level. Restore #87/#90 after diagnosis.
+The bounded software I2C transaction reads register 0x0000 at address 0x74,
+checks SCL on every rise (up to 500 ms clock stretching, 2500 ms transaction
+deadline), and sends B000 end-window command 0xEEEE. Lines are released on
+exit. Product validity alone does not establish complete sensor health.
+Tests exercise actual functions with simulated GPIO/time, including a high
+RDY arriving after the original deadline, permanent low, GPIO read errors,
+NACK, stretching and prevention of retries after line/protocol failure.
 
 ## Inherited diagnostic reference (#87; not active in this test)
 
@@ -74,7 +76,7 @@ advice does not apply to this diagnostic.
 
 
 # Corne Keyboard Guide
-This guide is for flashing the Ergomech Corne Keyboard. The Corne is 6×3+3 keys column-staggered split keyboard, using Cherry or Choc switches.
+This guide is for flashing the Ergomech Corne Keyboard. The Corne is 6Ã—3+3 keys column-staggered split keyboard, using Cherry or Choc switches.
 
 # ErgoMech Corne Wireless
 The Ergomech Corne Wireless uses a Nice!Nano microcontroller and runs the ZMK firmware. This guide will show you how to flash the ZMK firmware to the Nice!Nano microcontroller.
