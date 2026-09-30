@@ -1,20 +1,5 @@
-#include "azoteq_tps65.dtsi"
-
-/*
- * TPS65 is physically connected to the LEFT / central half.
- *
- * OLED stays on the standard Pro Micro I2C bus:
- *   SDA D2 / P0.17
- *   SCL D3 / P0.20
- *
- * RGB stays on D1 / P0.06.
- *
- * TPS65 uses the nRF52840 second I2C controller:
- *   SDA D16 / P0.10
- *   SCL D10 / P0.09
- *   NRST D8 / P1.04
- *   RDY  D9 / P1.06
- */
+/* TPS65 on the LEFT: SDA D16/P0.10, SCL D10/P0.09,
+ * NRST D8/P1.04, RDY D9/P1.06. Local input, no split pointer device. */
 &pinctrl {
     tps65_i2c_default: tps65_i2c_default {
         group1 {
@@ -63,7 +48,9 @@
     };
 };
 
-&tps65_listener {
-    status = "okay";
-    device = <&tps65>;
+/ {
+    tps65_listener: tps65_listener {
+        compatible = "zmk,input-listener";
+        device = <&tps65>;
+    };
 };

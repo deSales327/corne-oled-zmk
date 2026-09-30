@@ -7,7 +7,7 @@ on:
       - sofle_hybrid_rgb_rev5
       - feature/azoteq-tps65-right
       - test/tps65-streaming-mode
-      - test/tps65-left-streaming
+      - minimal/corne-tps65-left
   pull_request:
     branches:
       - master

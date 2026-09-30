@@ -1,77 +1,52 @@
-[![Build Status](../../actions/workflows/build.yml/badge.svg)](../../actions)
-[![Download Firmware](https://img.shields.io/badge/Download-Firmware-blue?logo=github)](../../releases/latest)
+# Minimal Corne with TPS65 on the left
 
+Firmware contains the normal Corne keyboard and a TPS65 connected directly
+to the left/central. USB keyboard and mouse reports come from the left;
+the right supplies its keys over the existing BLE split.
 
-# Corne Keyboard Guide
-This guide is for flashing the Ergomech Corne Keyboard. The Corne is 6×3+3 keys column-staggered split keyboard, using Cherry or Choc switches.
+No OLED, RGB/backlight, ZMK Studio, battery reporting, USB logging, custom
+probe threads, pointer split transport, or nice-oled dependency. OLED/i2c0
+and spi3 nodes are disabled. Deep sleep is disabled and the idle threshold
+is maximized for this USB-powered test. The previous keyboard layers and
+Alt-Tab macro remain; Studio unlock keys become transparent.
 
-# ErgoMech Corne Wireless
-The Ergomech Corne Wireless uses a Nice!Nano microcontroller and runs the ZMK firmware. This guide will show you how to flash the ZMK firmware to the Nice!Nano microcontroller.
+## Inspection of the other ChatGPT test (#100)
 
-## Default keymap
-The default keymap of this keyboard can be found here:
-![Default Keymap](./keymap-drawer/corne.svg)
+Repository: deSales327/corne-oled-zmk.
+Branch: test/tps65-left-streaming.
+Inspected commit: b7c589692c46ae5980a378768b0924d37a1cdc38.
 
-## Flashing the Corne
-The ZMK cli tool would typically have you step through several questions to generate the necessary code to flash the firmware then upload it to a new repository on GitHub.
-However, Ergomech has already done this for you. You can find the repository [here](https://github.com/ergomechstore/corne-oled-zmk). Assuming you already have a GitHub account,
-you can fork the repository, and make modifications to the keymap files in the future. For now, the guide will continue with the assumption that you have forked the repository.
+That test moved the sensor from the right peripheral to the left central,
+using P0.10/P0.09 and P1.04/P1.06, and changed the listener to the local sensor.
+The right build lost its trackpad shield. It still built nice_oled on both
+halves and Studio on the left. Its shared DTS also retained a pointer split
+node even though the listener was local. It reverted orientation from the
+#59 flip-y setting to switch-xy and removed RGB key bindings.
 
-### Running the Workflow
-The repository has a GitHub workflow that leverages the zmkfirmware/zmk repository to build the firmware. The workflow will build the firmware and upload it as an artifact to the repository.
-The workflow is triggered on push, pull_request, and manually via workflow_dispatch. You can trigger the workflow manually by going to the Actions tab in your forked repository and selecting the workflow.
+The driver changed from AYM1607 revision 27321f0232b50f0af31eb27ff97d539933467ea4
+to deSales327 revision bec78d530d896d5244a26d7bb39cf3e3ed69e25c.
+Comparing those revisions shows one functional change: IQS5XX_EVENT_MODE
+changes from BIT(0) to 0, selecting streaming mode. Initialization and the
+RDY rising-edge interrupt remain unchanged. This minimal branch preserves
+that exact driver and sensor settings to avoid another simultaneous driver
+experiment. Removing other features does not prove the short-lived pointer
+problem is fixed; the hardware test still has to establish that.
 
-### Workflow Artifact
-Once the workflow has completed, you can download the artifact from the Actions tab. The artifact will be a .zip file that contains the firmware. Extract the .zip file in your
-local directory. The extracted files will include:
-- `corne_right-nice_nano_v2-zmk.uf2`
-- `corne_left-nice_nano_v2-zmk.uf2`
-- `settings_reset-nice_nano_v2-zmk.uf2`
+## Files and wiring
 
-### Flashing the keymap and firmware
-#### Steps to ensure successful flashing
-- Keep in mind that the power switch on the wireless Ergomech Corne is only **one** of the ways that the keyboard can be powered. The other way is to plug in the USB-C cable.
-When flashing one side of the keyboard, the other side must be off. 
-- The keyboard must be in bootloader mode to flash the firmware. To enter the bootloader mode, press the "BOOT" button twice in quick succession. 
-- If you are having trouble flashing, you can always flash the `settings_reset-nice_nano_v2-zmk.uf2` file first. This is a good way to make sure 
-that the keyboard is in a known state before flashing the firmware. The `reset` flash can be visually confirmed by the screen on the Nice!Nano microcontroller 
-not displaying anything after the flash is complete.
+- corne_left_keyboard_trackpad_minimal.uf2: LEFT, with TPS65.
+- corne_right_keyboard_minimal.uf2: RIGHT, keyboard only.
+- settings_reset.uf2: optional reset of persisted settings and bonds.
 
-#### Flashing Order
-There is no required order to flash the firmware. You can flash the left or right side first. Assuming that you are attempting to flash the sides with the correct
-file (i.e. the right side with the `corne_right-nice_nano_v2-zmk.uf2` file), you may find it helpful to follow the following order:
-1. Confirm both sides of the keyboard are off.
-2. Flash the right side of the keyboard, unplug the USB-C cable, and set it aside.
-3. Flash the left side of the keyboard, leaving it plugged in after.
-4. Turn on the right side of the keyboard. You should see the screen on the Nice!Nano microcontroller light up and display a checkmark next to the wifi icon if the sides have connected.
-5. Open you favorite text editor and test the keyboard.
+TPS65 connections on the left nice!nano v2:
+J1.1 RDY -> D9/P1.06; J1.2 NRST -> D8/P1.04; J1.3 GND -> GND;
+J1.4 VDDHI -> VCC 3.3 V; J1.5 SCL -> D10/P0.09;
+J1.6 SDA -> D16/P0.10. Never use RAW for VDDHI.
 
-
-#### Flashing the firmware
-1. Connect the keyboard to your computer via USB-C cable.
-2. Press the "BOOT" button twice in quick succession to enter bootloader mode.
-3. The keyboard should appear as a USB drive on your computer.
-4. Drag and drop the `uf2` file that coincides with the side of the keyboard you are flashing onto the USB drive that represents the keyboard.
-5. The keyboard will automatically reboot and the new firmware will be flashed.
-
-**Note:** Some operating systems may show a failure when the keyboard reboots, or the USB drive may disappear. This is normal and the keyboard should be flashed successfully.
-The keyboard flashing has been confirmed to work successfully on Windows 10, and Linux. 
-
-## Modifying the keymap
-
-### ZMK Keymap
-We recommend at least reviewing the [ZMK Keymap documentation](https://zmk.dev/docs/features/keymaps) to understand the structure of the keymap files. This
-will help you understand the changes we are making to the generated files. While not required, most example keymaps attempt to show the layout of the keyboard
-shown as a comment underneath the layer declaration.
-
-### ZMK Firmware
-ZMK does provide an online [keymap editor](https://nickcoutsos.github.io/keymap-editor) and you can use this to change the keymap, this repo is already setup for the use of this editor.
-
-#### Modifying the keymap with the keymap editor
-
-#### Modifying the keymap manually
-The exact spacing doesn't matter, but keeping the indentation consistent can be helpful for reading your keymap files. If you indent each button it will be easier
-to confirm the structure of the keymap. Take a look at the [default keymap](config/corne.keymap) to see how this was done. 
-
-The Ergomech Corne has a 5 way switch on the right side keyboard. The location of the key presses on the 5 way switch are on the last line of the `bindings` section of each layer.
-As long as the correct number of entries exist on that row, the 5 way switch will work. 
+Flash the corresponding UF2 on each half, leaving the TPS65 on the left.
+Use the left USB for keyboard/mouse reports. Both halves need power; USB
+can power both while batteries are absent. OLEDs and RGB stay off by design.
+For a complete fresh-state test, settings_reset may be used on BOTH halves
+before flashing the normal right and left firmware. This erases Bluetooth
+pairings/settings; host pairings must then be removed/recreated if using BLE.
+There is no automatic settings reset at boot.

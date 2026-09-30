@@ -2,29 +2,15 @@ manifest:
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
-
-    - name: mctechnology17
-      url-base: https://github.com/mctechnology17
-
-    - name: aym1607
-      url-base: https://github.com/AYM1607
-
     - name: desales327
       url-base: https://github.com/deSales327
-
   projects:
     - name: zmk
       remote: zmkfirmware
       revision: v0.3.0
       import: app/west.yml
-
-    - name: zmk-nice-oled
-      remote: mctechnology17
-      revision: 46f824abb2bd41f1287c5c68abd14122af6042a3
-
     - name: zmk-driver-azoteq-iqs5xx
       remote: desales327
       revision: bec78d530d896d5244a26d7bb39cf3e3ed69e25c
-
   self:
     path: config
